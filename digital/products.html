@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Vape - Products | Catalogue</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <header class="navbar">
+        <div class="logo">
+            <h2>NEBULA<span>VAPE</span></h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html" class="active">Products</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon" id="openCartModal">
+            <span class="cart-count">0</span>
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+    </header>
+
+    <main class="main-content-navbar">
+        <section class="page-header">
+            <div class="container">
+                <h1>Catalog Products</h1>
+                <p>Temukan koleksi premium perangkat vape dan e-liquid terbaik kami.</p>
+            </div>
+        </section>
+
+        <section class="products-page">
+            <div class="container">
+                <div class="products-grid" id="productsGrid"> 
+                    
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>NEBULA VAPE</h3>
+                        <p>Premium vape products for enthusiasts and beginners alike.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Quick Links</h4>
+                        <a href="index.html">Home</a>
+                        <a href="products.html">Products</a>
+                        <a href="about.html">About</a>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Contact</h4>
+                        <p><i class="fas fa-phone"></i> +62 812-3456-7890</p>
+                        <p><i class="fas fa-envelope"></i> info@nebula-vape.com</p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 Nebula Vape. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <div id="productDetailModal" class="modal">
+        <div class="modal-content" id="productDetailContent">
+            </div>
+    </div>
+    
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Konfirmasi Pesanan</h3> 
+                <span class="close-modal close-btn" id="closeCartModal">&times;</span>
+            </div>
+            
+            <div id="cartItems" class="cart-items-display">
+                </div>
+
+            <div class="cart-summary">
+                <p><strong>Total Harga:</strong></p>
+                <p><strong><span id="totalPrice">Rp 0</span></strong></p>
+            </div>
+            
+            <div class="checkout-form-container">
+                <h4>Detail Pengiriman</h4>
+                <form id="checkoutForm">
+                    <input type="text" id="name" placeholder="Nama Lengkap" required class="checkout-input">
+                    <input type="tel" id="phone" placeholder="Nomor Telepon (WA)" required class="checkout-input">
+                    <textarea id="address" placeholder="Alamat Lengkap" rows="3" required class="checkout-input"></textarea>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="remove-all-btn cta-btn secondary">
+                            <i class="fas fa-trash"></i> Hapus Semua
+                        </button>
+                        
+                        <button type="submit" class="checkout-btn whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i> Konfirmasi via WhatsApp
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
