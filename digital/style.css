@@ -10,14 +10,14 @@
 }
 
 :root {
-    --primary: #e5007b;       
-    --primary-dark: #ff1493;   
+    --primary: #e5007b; 
+    --primary-dark: #ff1493; 
     
-    --dark: #0a0a0a;          
-    --dark-light: #1e1e1e;    
-    --card-bg: #2d2d2d;       
-    --text: #f0f0f0;          
-    --text-light: #b8b8b8;    
+    --dark: #0a0a0a; 
+    --dark-light: #1e1e1e; 
+    --card-bg: #2d2d2d; 
+    --text: #f0f0f0; 
+    --text-light: #b8b8b8; 
 
     --secondary: #00ffff; 
     --remove-btn-bg: #dc3545; 
@@ -47,7 +47,7 @@ body {
     align-items: center;
     padding: 15px 40px;
     background-color: var(--dark);
-    border-bottom: 1px solid var(--primary);
+    /* GARIS BAWAH GLOBAL DIHAPUS */
     position: sticky; 
     top: 0;
     z-index: 1000;
@@ -56,10 +56,28 @@ body {
 .navbar .logo h2 { font-size: 1.5rem; margin: 0;}
 .navbar .logo span { color: var(--primary); }
 
-.navbar nav ul { list-style: none; display: flex; }
+/* KONTROL LEBAR DI ATAS 768px (DESKTOP) */
+.navbar nav {
+    flex-shrink: 0;
+}
+
+.navbar nav ul { 
+    list-style: none; 
+    display: flex; 
+    gap: 10px; 
+    width: auto; 
+}
+
+.navbar nav ul li {
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
 .navbar nav ul li a {
     color: var(--text-light);
     text-decoration: none;
+    /* PENTING: Memastikan border-bottom hanya selebar teks + padding */
+    display: inline-block; 
     padding: 10px 15px;
     transition: color 0.3s;
     border-bottom: 3px solid transparent;
@@ -164,8 +182,42 @@ hr { border: none; border-top: 1px solid var(--card-bg); margin: 40px 0; }
    5. Products Page & Cards 
    =============================== */
 
-.page-header { background: linear-gradient(135deg, var(--primary) 0%, var(--dark-light) 100%); padding: 100px 0 60px; text-align: center; padding-top: 130px; }
+.page-header { 
+    background: linear-gradient(135deg, var(--primary) 0%, var(--dark-light) 100%); 
+    padding: 100px 0 60px; 
+    /* Hapus text-align: center; karena sekarang menggunakan flexbox */
+    text-align: left; 
+    padding-top: 130px; 
+}
 .products-page { padding: 60px 0; background: var(--dark-light); min-height: 60vh; }
+
+/* Styling Baru untuk Page Header (About Page) */
+.page-header-content {
+    /* Mengubah container menjadi flexbox */
+    display: flex;
+    /* Mengatur jarak antar elemen di kedua ujung container */
+    justify-content: space-between; 
+    /* Menyelaraskan item secara vertikal di tengah */
+    align-items: center; 
+}
+/* Styling untuk tombol contact yang ada di pojok kanan (nav-contact-right) */
+.nav-contact-right .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background-color: var(--primary); 
+    color: var(--text); 
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.nav-contact-right .nav-link:hover {
+    background-color: var(--primary-dark);
+}
+
 
 .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
 
@@ -229,18 +281,75 @@ hr { border: none; border-top: 1px solid var(--card-bg); margin: 40px 0; }
 .about-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; align-items: start; }
 .about-text h2 { color: var(--primary); font-size: 2rem; }
 .values-list i { color: var(--primary); }
-.image-placeholder { border: 2px solid var(--primary); }
-.image-placeholder i { color: var(--primary); }
+/* Styling placeholder gambar yang lebih lengkap */
+.image-placeholder { 
+    border: 2px solid var(--primary); 
+    background: var(--dark);
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+.image-placeholder i { color: var(--primary); font-size: 4rem; margin-bottom: 10px; }
 
 .team-section { padding: 80px 0; background: var(--dark); }
 .team-section h2 { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; }
 .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
-.member-photo { border: 3px solid var(--primary); color: var(--primary); width: 150px; height: 150px; margin: 0 auto 1rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem;}
+.team-member { text-align: center; } 
+/* PERUBAHAN CSS: Menambahkan overflow: hidden pada kontainer foto */
+.member-photo { 
+    border: 3px solid var(--primary); 
+    color: var(--primary); 
+    width: 150px; 
+    height: 150px; 
+    margin: 0 auto 1rem; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 3rem;
+    /* --- INI YANG DITAMBAH UNTUK MEMOTONG GAMBAR --- */
+    overflow: hidden; 
+}
+/* ATURAN BARU: Memastikan gambar mengisi lingkaran dengan benar */
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    /* Memastikan gambar mengisi area tanpa terdistorsi, memotong bagian yang berlebihan */
+    object-fit: cover; 
+    /* Memastikan gambar itu sendiri juga bulat */
+    border-radius: 50%; 
+}
+
 
 .contact-section { padding: 80px 0; background: var(--dark-light); }
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
-.contact-item i { color: var(--primary); }
+
+/* Styling kontak info */
+.contact-item {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+.contact-item i { 
+    color: var(--primary); 
+    font-size: 1.5rem; 
+    flex-shrink: 0; 
+    margin-top: 4px; 
+}
+.contact-item .icons h4 {
+    margin-bottom: 5px;
+    color: var(--primary);
+}
+
 .contact-form { background: var(--dark); padding: 2rem; border-radius: 10px; }
+/* Input form kontak */
+.contact-form .checkout-input {
+    margin-bottom: 15px; 
+}
 .contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--primary); }
 
 
@@ -344,15 +453,40 @@ hr { border: none; border-top: 1px solid var(--card-bg); margin: 40px 0; }
     /* Hapus aturan Sidebar */
     
     .navbar { padding: 15px 20px; flex-wrap: wrap; }
-    .navbar nav { width: 100%; order: 3; margin-top: 10px; }
-    .navbar nav ul { justify-content: space-around; width: 100%; }
+    .navbar nav { 
+        width: 100%; 
+        order: 3; 
+        margin-top: 10px; 
+        text-align: center;
+    }
+    .navbar nav ul { 
+        justify-content: center; 
+        width: auto; 
+    }
 
     .main-content-navbar { margin-left: 0; padding-top: 0; }
     
     .hero-content h1 { font-size: 2.5rem; }
     .page-header h1 { font-size: 2rem; }
+
+    /* Penyesuaian Responsif untuk Page Header (About Page) */
+    .page-header-content {
+        flex-direction: column; /* Ubah menjadi kolom di mobile */
+        align-items: flex-start;
+        text-align: left;
+    }
+    .nav-contact-right {
+        width: 100%; /* Agar tombol selebar container */
+        margin-top: 20px;
+    }
+    .nav-contact-right .nav-link {
+        width: 100%; /* Agar tombol penuh */
+        justify-content: center; /* Rata tengah ikon dan teks */
+    }
     
     .about-grid, .contact-grid, .footer-content { grid-template-columns: 1fr; }
+    /* Memastikan gambar di about di mobile menyesuaikan */
+    .about-image { order: -1; margin-bottom: 2rem; }
     
     .modal { max-width: 100%; }
     .modal-content { border-right: none; }
