@@ -90,12 +90,43 @@ function getStockByColor(productId, colorName) {
 // CART LOGIC
 // =======================================================
 
-// Fungsi Lama: Tidak digunakan lagi karena diganti addToCartWithQuantity
-/*
 window.handleAddToCart = function(productId, selectedColor) {
-    // ... (logic lama)
+    const product = products.find(p => p.id === productId);
+    
+    if (!selectedColor || selectedColor === "Pilih Warna" || selectedColor === "Pilih Nic") {
+        showNotification("Pilih warna/varian produk terlebih dahulu!");
+        return;
+    }
+
+    const availableStock = getStockByColor(productId, selectedColor);
+    
+    const existingItem = cart.find(item => 
+        item.id === productId && item.selectedColor === selectedColor
+    );
+    
+    const newQuantity = existingItem ? existingItem.quantity + 1 : 1;
+    
+    if (newQuantity > availableStock) {
+        showNotification(`Stok ${selectedColor} ${product.name} habis (Tersisa: ${availableStock})`);
+        return;
+    }
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            ...product,
+            quantity: 1,
+            selectedColor: selectedColor
+        });
+    }
+    
+    saveCartToLocalStorage();
+    updateCartCount();
+    showNotification(`${product.name} (${selectedColor}) added to cart!`);
+    
+    if (productDetailModal) productDetailModal.classList.remove('active'); 
 }
-*/
 
 window.removeFromCart = function(productId, selectedColor) {
     cart = cart.filter(item => !(item.id === productId && item.selectedColor === selectedColor));
@@ -208,40 +239,6 @@ function showNotification(message) {
 }
 
 
-// FUNGSI BARU: Tambah ke Keranjang dengan Kuantitas Spesifik
-function addToCartWithQuantity(productId, selectedColor, quantity) {
-    const product = products.find(p => p.id === productId);
-    
-    const availableStock = getStockByColor(productId, selectedColor);
-    
-    const existingItemIndex = cart.findIndex(item => 
-        item.id === productId && item.selectedColor === selectedColor
-    );
-    
-    const currentQuantityInCart = existingItemIndex !== -1 ? cart[existingItemIndex].quantity : 0;
-    const newTotalQuantity = currentQuantityInCart + quantity;
-    
-    if (newTotalQuantity > availableStock) {
-        showNotification(`Stok ${selectedColor} ${product.name} tidak mencukupi. (Tersedia: ${availableStock})`);
-        return;
-    }
-    
-    if (existingItemIndex !== -1) {
-        cart[existingItemIndex].quantity += quantity;
-    } else {
-        cart.push({
-            ...product,
-            quantity: quantity,
-            selectedColor: selectedColor
-        });
-    }
-    
-    saveCartToLocalStorage();
-    updateCartCount();
-    showNotification(`${quantity}x ${product.name} (${selectedColor}) added to cart!`);
-}
-
-
 // =======================================================
 // RENDER & DISPLAY FUNCTIONS
 // =======================================================
@@ -330,6 +327,40 @@ window.handleAddToCartFromModal = function(productId) {
     closeProductDetailModal(); 
 }
 
+// FUNGSI BARU: Tambah ke Keranjang dengan Kuantitas Spesifik
+function addToCartWithQuantity(productId, selectedColor, quantity) {
+    const product = products.find(p => p.id === productId);
+    
+    const availableStock = getStockByColor(productId, selectedColor);
+    
+    const existingItemIndex = cart.findIndex(item => 
+        item.id === productId && item.selectedColor === selectedColor
+    );
+    
+    const currentQuantityInCart = existingItemIndex !== -1 ? cart[existingItemIndex].quantity : 0;
+    const newTotalQuantity = currentQuantityInCart + quantity;
+    
+    if (newTotalQuantity > availableStock) {
+        showNotification(`Stok ${selectedColor} ${product.name} tidak mencukupi. (Tersedia: ${availableStock})`);
+        return;
+    }
+    
+    if (existingItemIndex !== -1) {
+        cart[existingItemIndex].quantity += quantity;
+    } else {
+        cart.push({
+            ...product,
+            quantity: quantity,
+            selectedColor: selectedColor
+        });
+    }
+    
+    saveCartToLocalStorage();
+    updateCartCount();
+    showNotification(`${quantity}x ${product.name} (${selectedColor}) added to cart!`);
+}
+
+
 function displayProducts(productsToShow) {
     if (!productsGrid) return;
     
@@ -361,7 +392,7 @@ function renderFeaturedProducts(count = 3) {
         const imageUrl = getProductImagePath(product.image);
         
         return `
-            <div class="product-card" onclick="openProductDetailModal(${product.id})">
+            <div class="product-card" onclick="location.href='products.html'">
                 <div class="product-image">
                     <img src="${imageUrl}" alt="${product.name}">
                 </div>
@@ -462,16 +493,47 @@ function setupEventListeners() {
     });
 }
 
+// PERBAIKAN FORM: Menggunakan Fetch API untuk mengirim data ke Formspree tanpa redirect.
 function initAboutPage() {
     const contactForm = document.querySelector('.contact-form form');
+    const formUrl = 'https://formspree.io/f/xyzadprk'; // Endpoint Formspree Anda
+
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            showNotification('Terima kasih atas pesan Anda! Kami akan segera menghubungi Anda.');
-            contactForm.reset();
+            e.preventDefault(); // Mencegah pengalihan halaman default
+
+            const formData = new FormData(contactForm);
+            
+            showNotification('Mengirim pesan Anda...');
+
+            fetch(formUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json' // Penting untuk Formspree AJAX
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    showNotification('✅ Terima kasih! Pesan Anda telah terkirim.');
+                    contactForm.reset(); // Mereset formulir setelah berhasil
+                } else {
+                    response.json().then(data => {
+                        let errorMessage = 'Terjadi kesalahan saat mengirim pesan.';
+                        if (Object.hasOwn(data, 'errors')) {
+                            errorMessage = data["errors"].map(error => error["message"]).join(", ");
+                        }
+                        showNotification(`❌ Gagal mengirim: ${errorMessage}`);
+                    })
+                }
+            })
+            .catch(error => {
+                showNotification('❌ Terjadi kesalahan jaringan. Coba lagi.');
+            });
         });
     }
 }
+
 
 // Initialize app
 function init() {
@@ -479,27 +541,35 @@ function init() {
     
     setupCheckoutForm(); 
 
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    // Mendapatkan nama halaman saat ini (e.g., 'index.html', 'products.html', 'about.html')
+    const pathSegments = window.location.pathname.split('/');
+    let currentPage = pathSegments.pop() || 'index.html';
+    if (currentPage === '') currentPage = 'index.html'; // Mengatasi root path
     
+    // === KODE PERBAIKAN UNTUK KELAS ACTIVE DIMULAI DI SINI ===
     document.querySelectorAll('header.navbar nav ul li a').forEach(link => {
         const linkPage = link.getAttribute('href');
-        link.classList.remove('active');
-        if ((currentPage === 'index.html' && linkPage === 'index.html') || 
-            (currentPage !== 'index.html' && linkPage === linkPage)) {
+        
+        // Membandingkan nama file link dengan nama file saat ini
+        if (linkPage === currentPage) {
             link.classList.add('active');
+        } else {
+            link.classList.remove('active');
         }
     });
+    // === KODE PERBAIKAN UNTUK KELAS ACTIVE BERAKHIR DI SINI ===
     
     if (currentPage === 'products.html') {
         displayProducts(products);
     }
     
-    if (currentPage === 'index.html' || currentPage === '') {
+    if (currentPage === 'index.html') {
         renderFeaturedProducts(3); 
     }
     
     setupEventListeners();
     
+    // Memanggil initAboutPage hanya jika di halaman about.html
     if (currentPage === 'about.html') {
         initAboutPage();
     }
